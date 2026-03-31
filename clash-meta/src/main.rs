@@ -12,6 +12,7 @@ use axum::{
 };
 use sqlx::sqlite::SqlitePoolOptions;
 use tower_http::cors::CorsLayer;
+use tower_http::services::{ServeDir, ServeFile};
 
 use routes::AppStateInner;
 
@@ -43,6 +44,10 @@ async fn main() {
         .route("/api/build-deck", post(routes::build_deck))
         .route("/api/cards", get(routes::get_cards))
         .route("/api/cards/{card_id}", get(routes::get_card_stats))
+        .fallback_service(
+            ServeDir::new("frontend/dist")
+                .fallback(ServeFile::new("frontend/dist/index.html")),
+        )
         .layer(CorsLayer::permissive())
         .with_state(state);
 
