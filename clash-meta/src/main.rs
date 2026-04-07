@@ -37,6 +37,7 @@ async fn main() {
     let state = Arc::new(AppStateInner { client, db: pool });
 
     let app = Router::new()
+        .route("/api/health", get(|| async { "ok" }))
         .route("/api/player/{tag}", get(routes::get_player))
         .route("/api/refresh", post(routes::refresh_data))
         .route("/api/top-decks", get(routes::get_top_decks))
