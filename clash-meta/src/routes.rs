@@ -19,6 +19,26 @@ pub struct AppStateInner {
 
 pub type AppState = Arc<AppStateInner>;
 
+/// GET /api/whoami — returns the server's public outbound IP.
+/// Useful for whitelisting in the Clash Royale developer portal.
+pub async fn whoami() -> impl IntoResponse {
+    match reqwest::get("https://api.ipify.org").await {
+        Ok(resp) => match resp.text().await {
+            Ok(ip) => (StatusCode::OK, Json(json!({ "ip": ip.trim() }))).into_response(),
+            Err(e) => (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({ "error": e.to_string() })),
+            )
+                .into_response(),
+        },
+        Err(e) => (
+            StatusCode::BAD_GATEWAY,
+            Json(json!({ "error": e.to_string() })),
+        )
+            .into_response(),
+    }
+}
+
 /// GET /api/player/:tag
 pub async fn get_player(
     State(state): State<AppState>,
