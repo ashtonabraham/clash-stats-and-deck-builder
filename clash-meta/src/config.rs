@@ -14,7 +14,7 @@ impl AppConfig {
     /// so .env values are available.
     pub fn from_env() -> Result<Self, env::VarError> {
         Ok(Self {
-            clash_api_token: env::var("CLASH_ROYALE_API_TOKEN")?,
+            clash_api_token: env::var("CLASH_ROYALE_API_TOKEN")?.trim().to_string(),
             listen_addr: env::var("PORT")
                 .map(|p| format!("0.0.0.0:{p}"))
                 .or_else(|_| env::var("LISTEN_ADDR"))
